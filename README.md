@@ -6,9 +6,10 @@ NOTE:
 
 2. Move Implementation.
 
-  the first method is:
+  The first method is:
  define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function.
-  the second method is:
+  
+  The second method is:
  mv function can be also got by motor.move(val=int(position)).
 
 
