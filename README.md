@@ -24,16 +24,18 @@ java 11 to java 8:
 https://linuxize.com/post/install-java-on-debian-10/
 
 4. 
-remove all taurus version. install taurus on debian 10 as follows:
+# remove all taurus version. install taurus on debian 10 as follows:
 
 https://taurus-scada.org/users/getting_started.html
 
-# install taurus in develop mode
+##install taurus in develop mode
 git clone https://github.com/taurus-org/taurus.git
+
 pip3 install -e ./taurus  # <-- Note the -e !!
 
-# install taurus_pyqtgraph in develop mode
+##install taurus_pyqtgraph in develop mode
 git clone https://github.com/taurus-org/taurus_pyqtgraph.git
+
 pip3 install -e ./taurus_pyqtgraph  # <-- Note the -e !!
 
 
