@@ -38,4 +38,9 @@ git clone https://github.com/taurus-org/taurus_pyqtgraph.git
 
 pip3 install -e ./taurus_pyqtgraph  # <-- Note the -e !!
 
+5. 
+# install itango3 with python3 :
+
+uninstall all version. install from this way: sudo apt install python3-itango
+
 
