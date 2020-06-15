@@ -56,5 +56,9 @@ Then, to work in editable mode, just do:
 
 sudo pip3 install -e ./sardana
 
+# PyTango problem with sardana.
 
+It is under PYTHON2 . should be installed under python3 
+
+# python3-serial should be installed. 
 
