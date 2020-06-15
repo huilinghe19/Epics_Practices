@@ -14,3 +14,9 @@ NOTE:
 
 
 
+3. Version update(debian9 to debian 10)
+https://www.cyberciti.biz/faq/update-upgrade-debian-9-to-debian-10-buster/
+
+
+java 11 to java 8
+https://linuxize.com/post/install-java-on-debian-10/
