@@ -31,16 +31,30 @@ https://taurus-scada.org/users/getting_started.html
 # install taurus in develop mode
 git clone https://github.com/taurus-org/taurus.git
 
-pip3 install -e ./taurus  # <-- Note the -e !!
+sudo pip3 install -e ./taurus  
 
 # install taurus_pyqtgraph in develop mode
 git clone https://github.com/taurus-org/taurus_pyqtgraph.git
 
-pip3 install -e ./taurus_pyqtgraph  # <-- Note the -e !!
+sudo pip3 install -e ./taurus_pyqtgraph  
 
 5. 
 # install itango3 with python3 :
 
 uninstall all version. install from this way: sudo apt install python3-itango
+
+# install sardana unter python3
+Working directly from Git
+
+If you intend to do changes to Sardana itself, or want to try the latest developments, it is convenient to work directly from the git source in “develop” (aka “editable”) mode, so that you do not need to re-install on each change.
+
+You can clone sardana from the main git repository:
+
+git clone https://github.com/sardana-org/sardana.git sardana
+
+Then, to work in editable mode, just do:
+
+sudo pip3 install -e ./sardana
+
 
 
