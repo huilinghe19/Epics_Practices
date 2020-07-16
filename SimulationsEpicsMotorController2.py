@@ -21,32 +21,53 @@ class EpicsMotorHW(object):
     def getState(self, axis):
         motor = Motor(EPICS_PVNAME + str(axis))
         motorState = int(motor.get('MSTA'))
-        return motorState
+        HighLimitSwitch = motor.get('HLS')
+        LowLimitSwitch = motor.get('LLS')
+        
+        if motorState == 2:
+            state = 1
+        elif motorState == 1024: 
+            state = 2
+        elif motorState == 1025:
+            state = 2
+        elif HighLimitSwitch == 1:
+            state = 3
+        elif LowLimitSwitch == 1:
+            state = 3
+        else:
+            state = 4
+        return state
     
     def getStatus(self, axis):
         motor = Motor(EPICS_PVNAME + str(axis))
         motorState = int(motor.get('MSTA'))
+        HighLimitSwitch = motor.get('HLS')
+        LowLimitSwitch = motor.get('LLS')
         status = "Motor HW is Unknown"
-        if motorState == 1024 or motorState == 1025:
-            status = "Motor HW is MOVING"
-        elif motorState == 2:
+        
+        if motorState == 2:
             status = "Motor HW is ON"
-        #elif motorState == 3:
-            #status = "Motor HW is in ALARM. Hit hardware lower limit switch"
-        #elif motorState == 4:
-            #status = "Motor HW is in ALARM. Hit hardware upper limit switch"
+        elif motorState == 1024 or motorState == 1025:
+            status = "Motor HW is MOVING"
+        elif HighLimitSwitch == 1:
+            status = "Motor HW is in ALARM. Hit hardware upper limit switch"
+        elif LowLimitSwitch == 1:
+            status = "Motor HW is in ALARM. Hit hardware lower limit switch"
         #elif motorState == 5:
             #status = "Motor is powered off"
+        else:
+            status = "Motor HW is Fault"
             
     def getLimits(self, axis):
         motor = Motor(EPICS_PVNAME + str(axis))
         HighLimitSwitch = motor.get('HLS')
         LowLimitSwitch = motor.get('LLS')
         switchstate = 3 * [False, ]
-        if LowLimitSwitch:
-            switchstate[2] = True
-        if HighLimitSwitch:
+        if HighLimitSwitch == 1:
             switchstate[1] = True
+        if LowLimitSwitch == 1:
+            switchstate[2] = True
+        
         return switchstate
     
     def getPosition(self, axis):
@@ -104,7 +125,7 @@ class EpicsMotorHW(object):
 
 class SimulationsEpicsMotorController2(MotorController):
 
-    STATES = {"ON": State.On, "MOVING": State.Moving, "FALUT": State.Fault}
+    STATES = {"1": State.On, "2": State.Moving, "3": State.Alarm, "4": State.Fault}
     MaxDevice = Epics_PVnumber
     
     def __init__(self, inst, props, *args, **kwargs):
@@ -120,41 +141,43 @@ class SimulationsEpicsMotorController2(MotorController):
         Read the axis state. One axis is defined as one motor in spock.
 
         """
-        print "StateOne() start"
-
+        #print("StateOne() start")
         motorHW = self.epicsmotorHW
-        motorState = motorHW.getState(axis)
-        print "motor State :", motorState
-        if int(motorState) == 2:
-            state = self.STATES["ON"]
-        elif int(motorState) == 1024: 
-            state = self.STATES["MOVING"]
-        elif int(motorState) == 1025:
-            state = self.STATES["MOVING"]
-        else:
-            state = self.STATES["FAULT"]
+        state = self.STATES[motorHW.getState(axis)]
+        status = motorHW.getStatus(axis)
+
         limit_switches = MotorController.NoLimitSwitch
-        print "StateOne() finished"
+        hw_limit_switches = motorHW.getLimits(axis)
+        if hw_limit_switches[0]:
+            limit_switches |= MotorController.HomeLimitSwitch
+        if hw_limit_switches[1]:
+            limit_switches |= MotorController.UpperLimitSwitch
+        if hw_limit_switches[2]:
+            limit_switches |= MotorController.LowerLimitSwitch
+        return state, status, limit_switches
+  
+        limit_switches = MotorController.NoLimitSwitch
+        print("StateOne() finished")
         return state, limit_switches
 
     def ReadOne(self, axis):
         """
         Read the position of the axis(motor). 
         """
-        print "ReadOne() start"
+        print("ReadOne() start")
 
         motorHW = self.epicsmotorHW
         return float(motorHW.getPosition(axis))
-        print "ReadOne finished"
+        print("ReadOne finished")
 
     def StartOne(self, axis, position):
         """
         Move the axis(motor) to the given position.
         """
-        print "StartOne() start"
+        print("StartOne() start")
         motorHW = self.epicsmotorHW
         motorHW.move(axis, position)
-        print "StartOne() finished"
+        print("StartOne() finished")
 
     def AbortOne(self, axis):
         """
