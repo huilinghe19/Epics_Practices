@@ -4,13 +4,112 @@ from sardana import State, SardanaValue
 from sardana.pool.controller import MotorController
 from sardana.pool.controller import DefaultValue, Description, FGet, FSet, Type
 import time
+import configparser
+
+config = configparser.ConfigParser()
+config.read('configurationFile.ini')
+
+
+class EpicsMotorHW(object):
+    
+    EPICS_PVNAME = config['EPICS_PV']['PVname']
+    EPICS_PVNUMBER = config['EPICS_PV']['PVnumber']
+    
+    def __init__(self):
+        pass
+        
+    def getState(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        motorState = int(motor.get('MSTA'))
+        return motorState
+    
+    def getStatus(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        motorState = int(motor.get('MSTA'))
+        status = "Motor HW is Unknown"
+        if motorState == 1024 or motorState == 1025:
+            status = "Motor HW is MOVING"
+        elif motorState == 2:
+            status = "Motor HW is ON"
+        #elif motorState == 3:
+            #status = "Motor HW is in ALARM. Hit hardware lower limit switch"
+        #elif motorState == 4:
+            #status = "Motor HW is in ALARM. Hit hardware upper limit switch"
+        #elif motorState == 5:
+            #status = "Motor is powered off"
+            
+    def getLimits(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        HighLimitSwitch = motor.get('HLS')
+        LowLimitSwitch = motor.get('LLS')
+        switchstate = 3 * [False, ]
+        if LowLimitSwitch:
+            switchstate[2] = True
+        if HighLimitSwitch:
+            switchstate[1] = True
+        return switchstate
+    
+    def getPosition(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        return float(motor.get_position())
+    
+    def getAcceleration(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        return float(motor.get('ACCL'))
+
+    def getDeceleration(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        return float(motor.get('ACCL'))
+        
+    
+    def getVelocity(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        return float(motor.get('VELO'))
+    
+    def getStepPerUnit(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        return float(motor.get('MRES'))
+    
+    def getBaseRate(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        return float(motor.get('VBAS'))
+    
+    def setAcceleration(self, axis, value):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        motor.put('ACCL', value)
+
+    def setDeceleration(self, axis, value):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        motor.put('ACCL', value)
+
+    def setVelocity(self, axis, value):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        motor.put('VELO', value)
+        
+    def setBaseRate(self, axis, value):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        motor.put('VBAS', value)
+        
+    def move(self, axis, position):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        motor.move(val=int(position))  
+        
+    def stop(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        motor.put('SPMG', 'Stop')  
+
+    def abort(self, axis):
+        motor = Motor(EPICS_PVNAME + str(axis))
+        motor.put('SPMG', 'Stop')  
 
 class SimulationsEpicsMotorController2(MotorController):
 
     STATES = {"ON": State.On, "MOVING": State.Moving, "FALUT": State.Fault}
-
+    MaxDevice = Epics_PVnumber
+    
     def __init__(self, inst, props, *args, **kwargs):
         MotorController.__init__(self,inst, props, *args, **kwargs)
+        self.epicsmotorHW = EpicsMotorHW()
         #super_class = super(CopleyController, self)
         #super_class.__init__(inst, props, *args, **kwargs)
     #def __del__(self):
@@ -22,9 +121,9 @@ class SimulationsEpicsMotorController2(MotorController):
 
         """
         print "StateOne() start"
-        #motorState = int(caget("IOCsim:m{}.MSTA".format(axis)))
-        motor = Motor('IOCsim:m{}'.format(axis))
-        motorState = int(motor.get('MSTA'))
+
+        motorHW = self.epicsmotorHW
+        motorState = motorHW.getState(axis)
         print "motor State :", motorState
         if int(motorState) == 2:
             state = self.STATES["ON"]
@@ -43,10 +142,9 @@ class SimulationsEpicsMotorController2(MotorController):
         Read the position of the axis(motor). 
         """
         print "ReadOne() start"
-        #return float(caget("IOCsim:m{}.RBV".format(axis)))
-        motor = Motor('IOCsim:m{}'.format(axis))
-        #return float(motor.get('RBV'))
-	return float(motor.get_position())
+
+        motorHW = self.epicsmotorHW
+        return float(motorHW.getPosition(axis))
         print "ReadOne finished"
 
     def StartOne(self, axis, position):
@@ -54,37 +152,44 @@ class SimulationsEpicsMotorController2(MotorController):
         Move the axis(motor) to the given position.
         """
         print "StartOne() start"
-        #caput("IOCsim:m{}.VAL".format(axis), int(position))
-        #caput("IOCsim:m{}.SPMG".format(axis), "Go")
-        motor = Motor('IOCsim:m{}'.format(axis))
-        #motor.put('VAL', int(position))
-        #motor.put('SPMG', 'Go')
-	motor.move(val=int(position))        
-        time.sleep(0.5)
+        motorHW = self.epicsmotorHW
+        motorHW.move(axis, position)
         print "StartOne() finished"
 
     def AbortOne(self, axis):
         """
         Abort the axis(motor).
         """
-        #caput("IOCsim:m{}.SPMG".format(axis), "Stop")
-        motor = Motor('IOCsim:m{}'.format(axis))
-        motor.put('SPMG', 'Stop')  
+       
+        motorHW = self.epicsmotorHW
+        motorHW.abort(axis)
         
     def GetAxisPar(self, axis, name):
+        motorHW = self.epicsmotorHW
         if name == "velocity":            
-            #ans = float(caget("IOCsim:m{}.VELO".format(axis)))
-            motor = Motor('IOCsim:m{}'.format(axis))
-            ans = float(motor.get('VELO'))
+            ans = motorHW.getVelocity(axis)
+        elif name == "acceleration":
+            ans = motorHW.getAcceleration(axis)      
+        elif name == "deceleration":
+            ans = motorHW.getDeceleration(axis)  
+        elif name == "base_rate":
+            ans = motorHW.getBaseRate(axis)        
+        elif name == "step_per_unit":
+            ans = motorHW.getStepPerUnit(axis)
             
-        #elif name == "acceleration":
-        #elif name == "deceleration":
         return ans
 
     def SetAxisPar(self, axis, name, value):
+        motorHW = self.epicsmotorHW
         if name == "velocity":
-            #caput("IOCsim:m{}.VELO".format(axis), value)
-            motor = Motor('IOCsim:m{}'.format(axis))
-            motor.put('VELO', value)
+            motorHW.setVelocity(axis, value)
+        elif name == "acceleration":
+            motorHW.setAcceleration(axis, value)
+        elif name == "deceleration":
+            motorHW.setDeceleration(axis, value)
+        elif name == "base_rate":
+            motorHW.setBaseRate(axis, value)
+        elif name == "step_per_unit":
+            motorHW.setStepPerUnit(axis, value)
 
 
