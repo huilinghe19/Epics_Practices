@@ -20,8 +20,7 @@ NOTE:
   
   Define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function.
   
-   
- mv function can be also got by Motor.move(val=int(position)). Some Paramerters can be also got and set by Motor.get_position(), Motor.set_position()...
+   mv function can be also got by motor.move(val=int(position)). Some Paramerters can be also got and set by motor.get_position(), motor.set_position()...
 
 
 3. Version update
