@@ -17,8 +17,8 @@ NOTE:
   The first method is:
  define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function.
   
-  The second method is:
- mv function can be also got by motor.move(val=int(position)). As in motor class there are many existing methods, so using this way is easier. motor.get('VAL'), motor.put('VAL', 100), motor.getPosition(), motor. 
+  The second method is: As there are many existing methods in Class Motor von epics, so using this way is easier. 
+ mv function can be also got by motor.move(val=int(position)). Paramerters can be got by Motor.get(). Such as Motor.get('VAL'), Motor.put('VAL', 100), Motor.get_position(), Motor.set_position()...
 
 
 3. Version update
@@ -63,9 +63,6 @@ Then, to work in editable mode, just do:
 
 sudo pip3 install -e ./sardana
 
-# PyTango problem with sardana.
+The other way to install Sardana. see Sardana Doc.
 
-It is under PYTHON2 . should be installed under python3 
-
-# python3-serial should be installed. 
-
+On the diaz07 computer, due to the different ways to install pytango. We need to be careful about path issues. 
