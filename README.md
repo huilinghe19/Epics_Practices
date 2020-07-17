@@ -4,8 +4,9 @@ epics and pyepics practices, in oder to use epics module in Sardana
 The way to define the epics ca server:
 
 
->>> EPICS_CA_AUTO_ADDR_LIST=NO
->>> EPICS_CA_ADDR_LIST=192.168.1.256
+> EPICS_CA_AUTO_ADDR_LIST=NO
+
+> EPICS_CA_ADDR_LIST=192.168.1.256
 
 
 NOTE:
