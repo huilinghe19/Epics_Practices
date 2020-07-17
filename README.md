@@ -14,11 +14,14 @@ NOTE:
 
 2. Move Implementation.
 
-  The first method is:
- define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function.
+  The first method is: using caget(), caput()
   
-  The second method is: As there are many existing methods in Class Motor von epics, so using this way is easier. 
- mv function can be also got by Motor.move(val=int(position)). Paramerters can be got by Motor.get(). Such as Motor.get('VAL'), Motor.put('VAL', 100), Motor.get_position(), Motor.set_position()...
+  The second method is:
+  
+  Define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function.
+  
+   
+ mv function can be also got by Motor.move(val=int(position)). Some Paramerters can be also got and set by Motor.get_position(), Motor.set_position()...
 
 
 3. Version update
