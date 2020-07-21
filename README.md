@@ -67,3 +67,5 @@ sudo pip3 install -e ./sardana
 The other way to install Sardana. see Sardana Doc.
 
 On the diaz07 computer, due to the different ways to install pytango. We need to be careful about path issues. 
+
+On the dide17 computer, before I am used to use huiling@dide17, but oil@dide17 works well. I test something under oil@dide17 in oder to replace all the old things. 
