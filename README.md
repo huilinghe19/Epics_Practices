@@ -31,6 +31,6 @@ On the same computer dide17, if the user is not original huiling, then Sardana c
 
 "pkg_resources.DistributionNotFound: The 'PyTango>=9.2.5' distribution was not found and is required by sardana"
 
-The Problem occurs with tango installation. Just user "huiling" has the right to use tango. "import tango" does not work when the user is different. Although jive can be opened, but the usage of tango can not be sure.
+The problem occurs with tango installation. Wenn I install tango at the first time, it is necessary to put "tango", "tango" as user and password for MySQL. Just user "huiling" has the right to import tango. "import tango" does not work when the user is different. Although jive can be opened, but the usage of tango can not be sure.
 
 
