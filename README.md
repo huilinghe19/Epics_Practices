@@ -1,8 +1,11 @@
 # Epics_Practices
-epics and pyepics practices, in oder to use epics module in Sardana 
+epics and pyepics practices, in oder to use epics module in Sardana .
 
-The way to define the epics ca server:
 
+# Define Epics PV in spock:
+>>> defctrl SimulationsEpicsMotorController simctrl DefaultValue="IOCsim:m"
+
+# The way to define the epics ca server:
 
 > EPICS_CA_AUTO_ADDR_LIST=NO
 
