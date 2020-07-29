@@ -2,9 +2,9 @@ import time
 import epics
 from epics import Motor
 from sardana import State, SardanaValue
-from sardana.pool.controller import MotorController
-from sardana.pool.controller import DefaultValue, Description, FGet, FSet, Type
-from sardana.macroserver.macro import Macro, macro, Type
+from sardana.pool.controller import MotorController, Type, Description,\
+    DefaultValue
+
 
 
 #import configparser
@@ -143,16 +143,17 @@ class EpicsMotorHW(object):
         motor.put('SPMG', 'Stop')  
 
 class SimulationsEpicsMotorController2(MotorController):
-    PV_NAME = "IOCsim:m"
+    #PV_NAME = "IOCsim:m"
 
     MaxDevice = 9
-
+    
+    ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
     
     STATES = {1: State.On, 2: State.Moving, 3: State.Alarm, 4: State.Fault, 5: State.Unknown}
     
     def __init__(self, inst, props, *args, **kwargs):
         MotorController.__init__(self, inst, props, *args, **kwargs)
-        self.epicsmotorHW = EpicsMotorHW(self.PV_NAME)
+        self.epicsmotorHW = EpicsMotorHW(self.PV)
         #super_class = super(CopleyController, self)
         #super_class.__init__(inst, props, *args, **kwargs)
         
@@ -237,7 +238,7 @@ class SimulationsEpicsMotorController2(MotorController):
 
     def SetAxisPar(self, axis, name, value):
         motorHW = self.epicsmotorHW
-       # name = name.lower()
+        #name = name.lower()
         
         if name == "velocity":
             motorHW.setVelocity(axis, value)
@@ -250,7 +251,3 @@ class SimulationsEpicsMotorController2(MotorController):
         elif name == "step_per_unit":
             motorHW.setStepPerUnit(axis, value)
 
-
-#s = SimulationsEpicsMotorController2({"ss":"ss"},{"d":"c"})
-#s.AddDevice(3)
-#s.AddDevice(4)
