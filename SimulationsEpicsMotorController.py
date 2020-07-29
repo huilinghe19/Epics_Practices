@@ -1,14 +1,13 @@
-
-#from epics import *
+import time
 import epics
 from epics import Motor
 from sardana import State, SardanaValue
 from sardana.pool.controller import MotorController
 from sardana.pool.controller import DefaultValue, Description, FGet, FSet, Type
 from sardana.macroserver.macro import Macro, macro, Type
-import time
-#import configparser
 
+
+#import configparser
 #config = configparser.ConfigParser()
 #config.read('configurationFile.ini')
 #EPICS_PVNAME = config['EPICS_PV']['PVname']
@@ -16,12 +15,16 @@ import time
 class EpicsMotorHW(object):
     
 
-    def __init__(self, pv_prefix, motor_prefix):
-        self.EPICS_PVNAME = "{}:{}".format(str(pv_prefix), str(motor_prefix))
-
-    def connectMotor(self, motorName, axis):
+    def __init__(self, name):
+        self.EPICS_PVNAME = str(name)
+        
+    #def getPVname(self, pv_prefix, motor_prefix):
+        #return "{}:{}".format(str(pv_prefix), str(motor_prefix))
+    
+    def connectMotor(self, name, axis):
         try:
-            motorHW = Motor(motorName + str(axis))
+            motorHW = Motor(str(name) + str(axis))
+            print("EpicsMotor {} Connected ".format(motorHW))
             return motorHW
         except epics.motor.MotorException:
             print("MotorException, check the epics Motor Hardware. ")
@@ -140,17 +143,29 @@ class EpicsMotorHW(object):
         motor.put('SPMG', 'Stop')  
 
 class SimulationsEpicsMotorController2(MotorController):
+    PV_NAME = "IOCsim:m"
 
+    MaxDevice = 9
+
+    
     STATES = {1: State.On, 2: State.Moving, 3: State.Alarm, 4: State.Fault, 5: State.Unknown}
     
     def __init__(self, inst, props, *args, **kwargs):
-        MotorController.__init__(self,inst, props, *args, **kwargs)
-        self.epicsmotorHW = EpicsMotorHW("IOCsim", "m")
+        MotorController.__init__(self, inst, props, *args, **kwargs)
+        self.epicsmotorHW = EpicsMotorHW(self.PV_NAME)
         #super_class = super(CopleyController, self)
         #super_class.__init__(inst, props, *args, **kwargs)
-    #def __del__(self):
-        #del self.epicsmotorHW
+        
 
+        
+    def AddDevice(self, axis):
+        if axis > self.MaxDevice:
+            raise Exception("Max. 10 devices are allowed")
+
+    def DeleteDevice(self, axis):
+        pass
+    
+    
     def StateOne(self, axis):
         """
         Read the axis state. One axis is defined as one motor in spock.
@@ -181,20 +196,18 @@ class SimulationsEpicsMotorController2(MotorController):
         """
         print("ReadOne() start: read axis {}  position. ".format(axis))
         motorHW = self.epicsmotorHW
-        position = float(motorHW.getPosition(axis))
-        print("ReadOne() finished: axis {} position is {}.  ".format(axis, position))
-        return position
+        
+        return float(motorHW.getPosition(axis))
     
     def StartOne(self, axis, position):
         """
         Move the axis(motor) to the given position.
         """
         print("StartOne() start, start the motion of axis {} ".format(axis))
-        try:
-            motorHW = self.epicsmotorHW        
-            motorHW.move(axis, position)
-        except:
-            print("MotorHW MOVE ERROR")
+        
+        motorHW = self.epicsmotorHW        
+        motorHW.move(axis, position)
+       
         print("StartOne() finished: the motion of axis {} is started. ")
 
     def AbortOne(self, axis):
@@ -208,6 +221,7 @@ class SimulationsEpicsMotorController2(MotorController):
         
     def GetAxisPar(self, axis, name):
         motorHW = self.epicsmotorHW
+        #name = name.lower()
         if name == "velocity":            
             ans = motorHW.getVelocity(axis)
         elif name == "acceleration":
@@ -223,6 +237,8 @@ class SimulationsEpicsMotorController2(MotorController):
 
     def SetAxisPar(self, axis, name, value):
         motorHW = self.epicsmotorHW
+       # name = name.lower()
+        
         if name == "velocity":
             motorHW.setVelocity(axis, value)
         elif name == "acceleration":
@@ -235,3 +251,6 @@ class SimulationsEpicsMotorController2(MotorController):
             motorHW.setStepPerUnit(axis, value)
 
 
+#s = SimulationsEpicsMotorController2({"ss":"ss"},{"d":"c"})
+#s.AddDevice(3)
+#s.AddDevice(4)
