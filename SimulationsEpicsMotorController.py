@@ -5,8 +5,6 @@ from sardana import State, SardanaValue
 from sardana.pool.controller import MotorController, Type, Description,\
     DefaultValue
 
-
-
 #import configparser
 #config = configparser.ConfigParser()
 #config.read('configurationFile.ini')
@@ -28,7 +26,7 @@ class EpicsMotorHW(object):
             return motorHW
         except epics.motor.MotorException:
             print("MotorException, check the epics Motor Hardware. ")
-            return False
+            return 
 
     def getStateID(self, axis):
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
@@ -176,8 +174,24 @@ class SimulationsEpicsMotorController2(MotorController):
         
         motorHW = self.epicsmotorHW
         stateID = motorHW.getStateID(axis)
+        ### if just state is needed, then use the following, the status is default in sardana
         state = self.STATES[stateID]
         #status = motorHW.getStatus(axis)
+        ###
+
+        ### if state and status are needed, then use the following
+        if stateID == 1:
+            return State.On, " \n Motor is stopped after moving"
+        elif stateID == 2:
+            return State.Moving, " \n Motor is moving, do not break the motion"
+        elif stateID == 3:
+            return State.Alarm, " Motor is in Alarm"
+        elif stateID == 4:
+            return State.Alarm, " Motor has an error"
+        elif stateID == 5:
+            return State.Unknown, " Motor is Unknown, please check the epics PV and the connection."
+
+       
         print("Result state : ",  state)
         limit_switches = MotorController.NoLimitSwitch
         hw_limit_switches = motorHW.getLimits(axis)
