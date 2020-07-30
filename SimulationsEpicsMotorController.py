@@ -11,8 +11,6 @@ from sardana.pool.controller import MotorController, Type, Description,\
 #EPICS_PVNAME = config['EPICS_PV']['PVname']
 
 class EpicsMotorHW(object):
-    
-
     def __init__(self, name):
         self.EPICS_PVNAME = str(name)
         
@@ -36,8 +34,8 @@ class EpicsMotorHW(object):
             stateID = 4
         else:
             motorState = int(motor.get('MSTA'))
-            HighLimitSwitch = motor.get('HLS')
-            LowLimitSwitch = motor.get('LLS')
+            HighLimitSwitch = motor.get('HIGH')
+            LowLimitSwitch = motor.get('LOW')
             if motorState == 10 or motorState == 2:
                 stateID = 1
             elif motorState == 1024: 
@@ -59,8 +57,8 @@ class EpicsMotorHW(object):
  
         else:            
              motorState = int(motor.get('MSTA'))
-             HighLimitSwitch = motor.get('HLS')
-             LowLimitSwitch = motor.get('LLS')
+             HighLimitSwitch = motor.get('HIGH')
+             LowLimitSwitch = motor.get('LOW')
 
              if motorState == 10 or motorState == 2:
                  status = "Motor HW is ON"
@@ -75,10 +73,22 @@ class EpicsMotorHW(object):
 
         return status
     
-    def getLimits(self, axis):
+    def setLimitsw(self, axis):
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
-        HighLimitSwitch = motor.get('HLS')
-        LowLimitSwitch = motor.get('LLS')
+        HighLimitSwitch = motor.put('HIGH', 1)
+        LowLimitSwitch = motor.put('LOW', 1)
+        switchstate = 3 * [False, ]
+        if HighLimitSwitch == 1:
+            switchstate[1] = True
+        if LowLimitSwitch == 1:
+            switchstate[2] = True
+        
+        return switchstate
+    
+    def getLimitsw(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        HighLimitSwitch = int(motor.get('HIGH'))
+        LowLimitSwitch = int(motor.get('LOW'))
         switchstate = 3 * [False, ]
         if HighLimitSwitch == 1:
             switchstate[1] = True
@@ -138,12 +148,122 @@ class EpicsMotorHW(object):
 
     def abort(self, axis):
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
-        motor.put('SPMG', 'Stop')  
-
+        motor.put('SPMG', 'Stop')
+        
+### The following methods are the extra attributes in epics motor.
+### These attributes are not used in MotorController class.
+    def getBackSpeed(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('BVEL'))    
+    def setBackspeed(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('BVEL', value)
+        
+### in spock, %set_lim, %set_lm are used to set the user limits and dial limits.
+### %set_pos and %set_user_pos are used to set the dial and user position.
+    def getDial_high_limit(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('DHLM'))
+    def setDial_high_limit(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('DHLM', value)
+        
+    def getDial_low_limit(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('DLLM'))    
+    def setDial_low_limit(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('DLLM', value)
+        
+    def getDone_moving(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('DMOV'))    
+    def setDone_moving(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('DMOV', value)
+    
+    def getDial_readback(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('DRBV'))    
+    def setDial_readback(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('DRBV', value)
+    
+    def getDial_drive(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('DVAL'))    
+    def setDial_drive(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('DVAL', value)
+        
+    def getDial_drive(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('DVAL'))    
+    def setDial_drive(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('DVAL', value)
+        
+    def getDial_drive(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('DVAL'))    
+    def setDial_drive(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('DVAL', value)
+        
+    def getLow_limit(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('LLM'))    
+    def setLow_limit(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('LLS', value)
+        
+    def getHigh_limit(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('HLM'))    
+    def setHigh_limit(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('HLS', value)
+        
+    def getReadback(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('RBV'))    
+    def setReadback(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('RBV', value)
+        
+    def getRaw_readback(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('RRBV'))    
+    def setRaw_readback(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('RRBV', value)
+        
+    def getRaw_drive(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('RVAL'))    
+    def setRaw_drive(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('RVAL', value)
+        
+    def getStop_go(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('SPMG'))    
+    def setStop_go(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('SPMG', value)
+        
+    def getDrive(self, axis):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        return float(motor.get('VAL'))    
+    def setDrive(self, axis, value):
+        motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        motor.put('VAL', value)
+    
+    
 class SimulationsEpicsMotorController2(MotorController):
     #PV_NAME = "IOCsim:m"
 
-    MaxDevice = 9
+    MaxDevice = 8
     
     ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
     
@@ -154,9 +274,7 @@ class SimulationsEpicsMotorController2(MotorController):
         self.epicsmotorHW = EpicsMotorHW(self.PV)
         #super_class = super(CopleyController, self)
         #super_class.__init__(inst, props, *args, **kwargs)
-        
 
-        
     def AddDevice(self, axis):
         if axis > self.MaxDevice:
             raise Exception("Max. 10 devices are allowed")
@@ -194,7 +312,7 @@ class SimulationsEpicsMotorController2(MotorController):
        
         print("Result state : ",  state)
         limit_switches = MotorController.NoLimitSwitch
-        hw_limit_switches = motorHW.getLimits(axis)
+        hw_limit_switches = motorHW.getLimitsw(axis)
         if hw_limit_switches[0]:
             limit_switches |= MotorController.HomeLimitSwitch
         if hw_limit_switches[1]:
@@ -247,7 +365,8 @@ class SimulationsEpicsMotorController2(MotorController):
             ans = motorHW.getBaseRate(axis)        
         elif name == "step_per_unit":
             ans = motorHW.getStepPerUnit(axis)
-            
+        #elif name == "dial_low_limit":
+            #ans = motorHW.getDial_low_limit(axis)
         return ans
 
     def SetAxisPar(self, axis, name, value):
@@ -264,4 +383,6 @@ class SimulationsEpicsMotorController2(MotorController):
             motorHW.setBaseRate(axis, value)
         elif name == "step_per_unit":
             motorHW.setStepPerUnit(axis, value)
+        #elif name == "dial_low_limit":
+            #motorHW.setDial_low_limit(axis, value)
 
