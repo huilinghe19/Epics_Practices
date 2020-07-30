@@ -4,12 +4,11 @@ epics and pyepics practices, in oder to use epics module in Sardana .
 
 # Define Epics PV in spock 
 ## controller is simctrl
-## motor is sim1, sim2 
+## motor is sim1
 ### dial/user limit and position are different in epics and sardana. There are seperate concepts. Users can define both of them in epics and sardana, the ranges must be valid, but the ranges can be different. The range of the epics PV >= the range of sardana motor.     
 	>>> Pool_simulation_1.put_property({"PoolPath":["/controllers/simulationEpics"]}) 
 	>>> defctrl SimulationsEpicsMotorController2 simctrl PV="IOCsim:m"
 	>>> defelem sim1 simctrl 1
-	>>> defelem sim2 simctrl 2
 	>>>  wa
 	Current positions (user, dial) on 2020-07-30 09:42:49.140863
 
