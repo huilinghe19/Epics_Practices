@@ -3,8 +3,19 @@ epics and pyepics practices, in oder to use epics module in Sardana .
 
 
 # Define Epics PV in spock:
->>> defctrl SimulationsEpicsMotorController simctrl DefaultValue="IOCsim:m"
+>>> defctrl SimulationsEpicsMotorController2 simctrl PV="IOCsim:m"
+>>> defelem sim1 simctrl 1
+>>> defelem sim2 simctrl 2
 
+# Get properties in spock
+>>> simctrl.get_db_host()
+	Result [3]: 'dide17.basisit.de'
+>>> simctrl.get_db_port()
+	Result [4]: '10000'
+>>> simctrl.get_property("PV")
+	Result [7]: {'PV': ['IOCsim:m']}
+
+  
 # The way to define the epics ca server:
 
 > EPICS_CA_AUTO_ADDR_LIST=NO
