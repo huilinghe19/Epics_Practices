@@ -19,18 +19,22 @@ epics and pyepics practices, in oder to use epics module in Sardana .
 	Result [7]: {'PV': ['IOCsim:m']}
 
   
-# The way to define the epics ca server:
-
-> EPICS_CA_AUTO_ADDR_LIST=NO
-
-> EPICS_CA_ADDR_LIST=192.168.1.256
+# The way to start the epics ca server:
+	cd /hzb/EPICS01/motor-6.11-old/iocBoot/iocSim
+	### start the simulation server
+	./st.cmd.unix
+	### run the program in the background
+	screen -dmS EPICS-MotorSimulation ./st.cmd.unix
+	### set environment variable 
+	EPICS_CA_AUTO_ADDR_LIST=NO
+	EPICS_CA_ADDR_LIST=192.168.1.255
 
 
 # Move Implementation.
 
-  The first method is: using caget(), caput()
+## The first method is: using caget(), caput()
   
-  The second method is:
+## The second method is:
   
   Define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function.
   
