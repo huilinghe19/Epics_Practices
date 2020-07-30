@@ -2,7 +2,8 @@
 epics and pyepics practices, in oder to use epics module in Sardana .
 
 
-# Define Epics PV in spock:
+# Define Epics PV in spock, controller is simctrl, motor is sim1, sim2 :
+	>>> Pool_simulation_1.put_property({"PoolPath":["/controllers/simulationEpics"]}) 
 	>>> defctrl SimulationsEpicsMotorController2 simctrl PV="IOCsim:m"
 	>>> defelem sim1 simctrl 1
 	>>> defelem sim2 simctrl 2
