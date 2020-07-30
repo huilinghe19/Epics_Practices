@@ -35,12 +35,22 @@ epics and pyepics practices, in oder to use epics module in Sardana .
 
 
 # Get properties in spock
+## The standard attributes like position, velocity, acceleration, deceleration, base_rate,step_per_unit can be easily got in spock. Other epics motor attributes can not be got by default attributes. But we can use extra neu marcos to get them. "PV" is the control property, which stands for the epics PV name. It can be easily changed to adapt to the other PVs.
 	>>> simctrl.get_db_host()
 	Result [3]: 'dide17.basisit.de'
 	>>> simctrl.get_db_port()
 	Result [4]: '10000'
 	>>> simctrl.get_property("PV")
 	Result [7]: {'PV': ['IOCsim:m']}
+	>>> sim1.position
+	Result [51]: 1.0
+	>>> sim1.base_rate
+	Result [50]: 0.1
+	>>>  sim1.velocity
+	Result [53]: 1.0
+	>>> sim1.limit_switches
+	Result [52]: array([False, False, False])
+
 
   
 # The way to start the epics ca server:
