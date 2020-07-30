@@ -5,10 +5,35 @@ epics and pyepics practices, in oder to use epics module in Sardana .
 # Define Epics PV in spock 
 ## controller is simctrl
 ## motor is sim1, sim2 
+### dial/user limit and position are different in epics and sardana. There are seperate concepts.   
 	>>> Pool_simulation_1.put_property({"PoolPath":["/controllers/simulationEpics"]}) 
 	>>> defctrl SimulationsEpicsMotorController2 simctrl PV="IOCsim:m"
 	>>> defelem sim1 simctrl 1
 	>>> defelem sim2 simctrl 2
+	>>>  wa
+	Current positions (user, dial) on 2020-07-30 09:42:49.140863
+
+          sim1
+	User   10.0000
+	Dial   10.0000
+
+	>>> %set_user_pos sim1 1
+	sim1 reset from 10.0000 (offset 0.0000) to 1.0000 (offset -9.0000)
+	>>> %set_lm sim1 -4 4 
+	sim1 limits set to -4.0000 4.0000 (dial units)
+	>>> %set_lim sim1 -5 5
+	sim1 limits set to -5.0000 5.0000 (user units)
+	>>> wm sim1
+                   sim1
+	User               
+	 High               5.0
+	 Current            1.0
+	 Low               -5.0
+	Dial               
+	 High               4.0
+	 Current           10.0
+	 Low               -4.0
+
 
 # Get properties in spock
 	>>> simctrl.get_db_host()
