@@ -34,10 +34,11 @@ epics and pyepics practices, in oder to use epics module in Sardana .
 	 Low               -4.0
 
 
-# Get properties in spock
-## ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
+# Control properties 
+	ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
 ## "PV" is the control property of the controller, which stands for the epics PV name. It is a default value. It can be changed to adapt to the other PVs before the server start. Make sure the control property "PV" is right. A very important issue is, once the sardana server is started(controller program is used) and the controllers and motors are already created in Tango DB/jive, the property is shown in jive and will be not easily changed. Because this is a default value. We can delete the server with jive and then restart the sardana server with other control properties. That means, control properties remains after the server start all the time. It is different from the attributes, which can be easily changed.  
 
+# Motor Attributes
 ## The standard sardana motor attributes like "position", "velocity", "acceleration", "deceleration", "base_rate", "step_per_unit" can be easily got in spock. Other epics motor attributes can not be got by default attribute settings. But we can write extra neu marcos to get/set them. 
 
 	>>> simctrl.get_db_host()
