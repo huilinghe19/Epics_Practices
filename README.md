@@ -35,7 +35,9 @@ epics and pyepics practices, in oder to use epics module in Sardana .
 
 
 # Get properties in spock
-## The standard attributes like position, velocity, acceleration, deceleration, base_rate,step_per_unit can be easily got in spock. Other epics motor attributes can not be got by default attributes. But we can use extra neu marcos to get them. "PV" is the control property, which stands for the epics PV name. It can be easily changed to adapt to the other PVs.
+## "PV" is the control property of the controller, which stands for the epics PV name. It can be easily changed to adapt to the other PVs.
+## The standard sardana motor attributes like "position", "velocity", "acceleration", "deceleration", "base_rate", "step_per_unit" can be easily got in spock. Other epics motor attributes can not be got by default attribute settings. But we can write extra neu marcos to get/set them. 
+
 	>>> simctrl.get_db_host()
 	Result [3]: 'dide17.basisit.de'
 	>>> simctrl.get_db_port()
@@ -66,7 +68,7 @@ epics and pyepics practices, in oder to use epics module in Sardana .
 
 # Move Implementation.
 
-## The first method is: using caget(), caput()
+## The first method is: using ca tools like caget(), caput()
   
 ## The second method is:
   
