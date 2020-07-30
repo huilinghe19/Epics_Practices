@@ -28,10 +28,10 @@ class EpicsMotorHW(object):
 
     def getStateID(self, axis):
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
-        stateID = 5
         if not motor:
             print("No axis {} connected. ".format(axis))
-            stateID = 4
+            return 
+             
         else:
             motorState = int(motor.get('MSTA'))
             HighLimitSwitch = motor.get('HIGH')
@@ -47,7 +47,7 @@ class EpicsMotorHW(object):
             elif LowLimitSwitch == 1:
                 stateID = 3
       
-        return stateID
+            return stateID
     
     def getStatus(self, axis):
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
@@ -274,7 +274,10 @@ class SimulationsEpicsMotorController2(MotorController):
         self.epicsmotorHW = EpicsMotorHW(self.PV)
         #super_class = super(CopleyController, self)
         #super_class.__init__(inst, props, *args, **kwargs)
-
+        ### initialization
+        print("Epics PV Initialization:::", self.epicsmotorHW)
+        print("Epics PV Prefix:::", self.PV)
+            
     def AddDevice(self, axis):
         if axis > self.MaxDevice:
             raise Exception("Max. 10 devices are allowed")
@@ -292,25 +295,29 @@ class SimulationsEpicsMotorController2(MotorController):
         
         motorHW = self.epicsmotorHW
         stateID = motorHW.getStateID(axis)
+        print("State ID: ", stateID)
+        
         ### if just state is needed, then use the following, the status is default in sardana
         state = self.STATES[stateID]
+        #print("Result state : ",  state)
         #status = motorHW.getStatus(axis)
         ###
-
+        
+        if not stateID:
+            print("No State ID from epicsmotorHW")
+          
         ### if state and status are needed, then use the following
-        if stateID == 1:
-            return State.On, " \n Motor is stopped after moving"
-        elif stateID == 2:
-            return State.Moving, " \n Motor is moving, do not break the motion"
-        elif stateID == 3:
-            return State.Alarm, " Motor is in Alarm"
-        elif stateID == 4:
-            return State.Alarm, " Motor has an error"
-        elif stateID == 5:
-            return State.Unknown, " Motor is Unknown, please check the epics PV and the connection."
+        #elif stateID == 1:
+            #return State.On, " \n Motor is stopped after moving"
+        #elif stateID == 2:
+            #return State.Moving, " \n Motor is moving, do not break the motion"
+        #elif stateID == 3:
+            #return State.Alarm, " Motor is in Alarm"
+        #elif stateID == 4:
+            #return State.Alarm, " Motor has an error"
+        #elif stateID == 5:
+            #return State.Unknown, " Motor is Unknown, please check the epics PV and the connection."
 
-       
-        print("Result state : ",  state)
         limit_switches = MotorController.NoLimitSwitch
         hw_limit_switches = motorHW.getLimitsw(axis)
         if hw_limit_switches[0]:
@@ -329,18 +336,17 @@ class SimulationsEpicsMotorController2(MotorController):
         """
         print("ReadOne() start: read axis {}  position. ".format(axis))
         motorHW = self.epicsmotorHW
-        
-        return float(motorHW.getPosition(axis))
+        ans = float(motorHW.getPosition(axis))
+        print("ReadOne() finished, position is: {} ".format(ans))
+        return ans
     
     def StartOne(self, axis, position):
         """
         Move the axis(motor) to the given position.
         """
         print("StartOne() start, start the motion of axis {} ".format(axis))
-        
         motorHW = self.epicsmotorHW        
         motorHW.move(axis, position)
-       
         print("StartOne() finished: the motion of axis {} is started. ")
 
     def AbortOne(self, axis):
