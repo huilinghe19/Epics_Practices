@@ -13,25 +13,28 @@ from sardana.pool.controller import MotorController, Type, Description,\
 class EpicsMotorHW(object):
     def __init__(self, name):
         self.EPICS_PVNAME = str(name)
-        
-    #def getPVname(self, pv_prefix, motor_prefix):
-        #return "{}:{}".format(str(pv_prefix), str(motor_prefix))
     
     def connectMotor(self, name, axis):
+        """
+        Connect with the epics PV using the prefix name and axis number of PV.
+        """
         try:
             motorHW = Motor(str(name) + str(axis))
             print("EpicsMotor {} Connected ".format(motorHW))
             return motorHW
         except epics.motor.MotorException:
             print("MotorException, check the epics Motor Hardware. ")
-            return 
+            return
 
     def getStateID(self, axis):
+        """
+        Get the value from axis MSTA attribute and map them into stateID: 1,2,3 
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         if not motor:
             print("No axis {} connected. ".format(axis))
             return 
-             
+			             
         else:
             motorState = int(motor.get('MSTA'))
             HighLimitSwitch = motor.get('HIGH')
@@ -50,6 +53,9 @@ class EpicsMotorHW(object):
             return stateID
     
     def getStatus(self, axis):
+        """
+        Get the value of MSTA attribute of the axis and map them into various status 
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         status = "Motor HW is Unknown"
         if not motor:
@@ -74,6 +80,9 @@ class EpicsMotorHW(object):
         return status
     
     def setLimitsw(self, axis):
+        """
+        Set the limit switches of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         HighLimitSwitch = motor.put('HIGH', 1)
         LowLimitSwitch = motor.put('LOW', 1)
@@ -86,6 +95,9 @@ class EpicsMotorHW(object):
         return switchstate
     
     def getLimitsw(self, axis):
+        """
+        Get the limit switches of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         HighLimitSwitch = int(motor.get('HIGH'))
         LowLimitSwitch = int(motor.get('LOW'))
@@ -98,59 +110,98 @@ class EpicsMotorHW(object):
         return switchstate
     
     def getPosition(self, axis):
+        """
+        Get the position of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         return float(motor.get_position())
     
     def getAcceleration(self, axis):
+        """
+        Get the acceleration of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         return float(motor.get('ACCL'))
 
     def getDeceleration(self, axis):
+        """
+        Get the deceleration of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         return float(motor.get('ACCL'))
         
     
     def getVelocity(self, axis):
+        """
+        Get the velocity of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         return float(motor.get('VELO'))
     
     def getStepPerUnit(self, axis):
+        """
+        Get the step per unit of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         return float(motor.get('MRES'))
     
     def getBaseRate(self, axis):
+        """
+        Get the base rate  of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         return float(motor.get('VBAS'))
-    
+
     def setAcceleration(self, axis, value):
+        """
+        Set the acceleration of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         motor.put('ACCL', value)
 
     def setDeceleration(self, axis, value):
+        """
+        Set the deceleration of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         motor.put('ACCL', value)
 
     def setVelocity(self, axis, value):
+        """
+        Set the velocity of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         motor.put('VELO', value)
         
     def setBaseRate(self, axis, value):
+        """
+        Set the base rate of the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         motor.put('VBAS', value)
         
     def move(self, axis, position):
+        """
+        Move the axis to the position.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         motor.move(val=int(position))  
         
     def stop(self, axis):
+        """
+        Stop the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         motor.put('SPMG', 'Stop')  
 
     def abort(self, axis):
+        """
+        Abort the axis.
+        """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         motor.put('SPMG', 'Stop')
         
-### The following methods are the extra attributes in epics motor.
+### The following methods are the extra epics motor attributes.
 ### These attributes are not used in MotorController class.
     def getBackSpeed(self, axis):
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
@@ -159,7 +210,7 @@ class EpicsMotorHW(object):
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         motor.put('BVEL', value)
         
-### in spock, %set_lim, %set_lm are used to set the user limits and dial limits.
+### In spock, %set_lim, %set_lm are used to set the user limits and dial limits.
 ### %set_pos and %set_user_pos are used to set the dial and user position.
     def getDial_high_limit(self, axis):
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
@@ -261,8 +312,6 @@ class EpicsMotorHW(object):
     
     
 class SimulationsEpicsMotorController2(MotorController):
-    #PV_NAME = "IOCsim:m"
-
     MaxDevice = 8
     
     ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
@@ -271,24 +320,33 @@ class SimulationsEpicsMotorController2(MotorController):
     
     def __init__(self, inst, props, *args, **kwargs):
         MotorController.__init__(self, inst, props, *args, **kwargs)
+        self.PV= "IOCsim:m"
         self.epicsmotorHW = EpicsMotorHW(self.PV)
         #super_class = super(CopleyController, self)
         #super_class.__init__(inst, props, *args, **kwargs)
-        ### initialization
-        print("Epics PV Initialization:::", self.epicsmotorHW)
+        #self.epicsmotorHW = EpicsMotorHW(self.PV)
+        ### Epics PV initialization process 
+        epicsmotorHW = self.epicsmotorHW
         print("Epics PV Prefix:::", self.PV)
-            
+        print("Check Epics PV Server::: {} is connected".format(epicsmotorHW.connectMotor(self.PV, 1)))
+        ### Epics PV initialization process finished
+        
     def AddDevice(self, axis):
+        """
+        Add an axis.
+        """
         if axis > self.MaxDevice:
             raise Exception("Max. 10 devices are allowed")
 
     def DeleteDevice(self, axis):
-        pass
-    
+        """
+        Delete the axis.
+        """
+        pass    
     
     def StateOne(self, axis):
         """
-        Read the axis state. One axis is defined as one motor in spock.
+        Read the axis state. One axis is one motor in sardana.
 
         """
         print("StateOne() start: read axis {} state. ".format(axis))
@@ -305,7 +363,8 @@ class SimulationsEpicsMotorController2(MotorController):
         
         if not stateID:
             print("No State ID from epicsmotorHW")
-          
+            return State.Unknown, " Motor is Unknown, please check the epics PV and the connection."
+            
         ### if state and status are needed, then use the following
         #elif stateID == 1:
             #return State.On, " \n Motor is stopped after moving"
@@ -359,6 +418,11 @@ class SimulationsEpicsMotorController2(MotorController):
         print("AbortOne() finished: the motion of axis {} is aborted. ")
         
     def GetAxisPar(self, axis, name):
+        """
+        Get the standard sardana parameters like velocity, acceleration, deceleration, base rate, step_per_unit. 
+        Other parameters can not be added by this way.
+ 
+        """
         motorHW = self.epicsmotorHW
         #name = name.lower()
         if name == "velocity":            
@@ -376,6 +440,10 @@ class SimulationsEpicsMotorController2(MotorController):
         return ans
 
     def SetAxisPar(self, axis, name, value):
+        """
+        Set the standard sardana parameters like velocity, acceleration, deceleration, base rate, step_per_unit. 
+ 
+        """
         motorHW = self.epicsmotorHW
         #name = name.lower()
         
@@ -391,4 +459,5 @@ class SimulationsEpicsMotorController2(MotorController):
             motorHW.setStepPerUnit(axis, value)
         #elif name == "dial_low_limit":
             #motorHW.setDial_low_limit(axis, value)
+
 
