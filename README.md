@@ -1,6 +1,11 @@
 # Epics_Practices
 epics and pyepics practices, in oder to use epics module in Sardana .
 
+# Add Devices Server in Sardana/Tango
+## Method 1: Spock Operation(standard sardana operation)
+## Method 2: Jive Operation(for all tango devices)
+## Method 2: Use Python Script with Tango/PyTango. "addDeviceinSardana.py" can be used to add devices in sardana when the server is ON. This code can also be added in the controller program, then the server must restart. 
+
 
 # Define Epics PV in spock 
 ## controller is simctrl
