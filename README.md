@@ -49,7 +49,7 @@ dial/user limit are different in epics and sardana. They are seperate concepts. 
 
 # Motor Attributes
 
-## The standard sardana motor attributes like "position", "velocity", "acceleration", "deceleration", "base_rate", "step_per_unit" can be easily got in spock. Other epics motor attributes can not be got by default attribute settings. But we can write extra neu marcos to get/set them. 
+The standard sardana motor attributes like "position", "velocity", "acceleration", "deceleration", "base_rate", "step_per_unit" can be easily got in spock. Other epics motor attributes can not be got by default attribute settings. But we can write extra neu marcos to get/set them. 
 
 	>>> simctrl.get_db_host()
 	Result [3]: 'dide17.basisit.de'
