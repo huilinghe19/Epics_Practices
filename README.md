@@ -51,8 +51,18 @@ Before using sardana tools macroexecutor and sequencer, something must be alread
 	>>> uct 5 netsim
     	netsim
   	192.0000
-	>>> expconf (add new measurement Group: simMeasureGroup, add channel: netsim, add storage file name: test.h5, file path: /tmp)
-
+	>>> expconf (Set configuration. add new measurement Group: simMeasureGroup, add channel: netsim, add storage file name: test.h5, file path: /tmp)
+	>>> ascan sim1 -2 2 4 1
+	Operation will be saved in /tmp/test.h5 (HDF5::NXscan from NXscanH5_FileRecorder)
+	Scan #1 started at Wed Aug  5 11:00:37 2020. It will take at least 0:00:13.900000
+ 	#Pt No     sim1     netsim      dt   
+   	0         -2       360     0.21673 
+   	1         -1      15249    1.29967 
+   	2         0        552     2.37312 
+   	3         0        192     3.46593 
+   	4         2        454     4.49761 
+	Operation saved in /tmp/test.h5 (HDF5::NXscan)
+	Scan #1 ended at Wed Aug  5 11:00:43 2020, taking 0:00:05.531525. Dead time 9.6% (motion dead time 2.0%)
 
 # Control properties 
 	ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
