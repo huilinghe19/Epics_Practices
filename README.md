@@ -41,6 +41,18 @@ dial/user limit are different in epics and sardana. They are seperate concepts. 
 	 Current           10.0
 	 Low               -4.0
 
+# Before using sardana tools macroexecutor and sequencer, something must be already set such as storage and measurementGoup and so on. Otherweise the execution can not run well. Add ct, Add channel, measurementGoup, add senv file. 
+	>>> defctrl NetworkTrafficCounterTimerController netctrlsim interface eno1
+	>>> defelem netsim netctrlsim 1 
+	>>> uct 1 netsim
+    	netsim
+    	0.0000
+
+	>>> uct 5 netsim
+    	netsim
+  	192.0000
+	>>> expconf (add new measurement Group: simMeasureGroup, add channel: netsim, add storage file name: test.h5, file path: /tmp)
+
 
 # Control properties 
 	ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
