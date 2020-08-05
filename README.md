@@ -14,6 +14,7 @@ Method 3: Use Python Script with Tango/PyTango. "addDeviceinSardana.py" can be u
 controller is simctrl, motor is sim1
 
 dial/user limit are different in epics and sardana. They are seperate concepts. Users can define both of them in epics and sardana, the ranges must be valid, but the ranges can be different. The dial limit values in sardana do not come from epics module. They are set by the sardana users. The range of the epics PV >= the range of sardana motor.     
+	
 	>>> Pool_simulation_1.put_property({"PoolPath":["/controllers/simulationEpics"]}) 
 	>>> defctrl SimulationsEpicsMotorController2 simctrl PV="IOCsim:m"
 	>>> defelem sim1 simctrl 1
@@ -46,12 +47,12 @@ Before using sardana tools macroexecutor and sequencer, something must be alread
 	>>> defctrl NetworkTrafficCounterTimerController netctrlsim interface eno1
 	>>> defelem netsim netctrlsim 1 
 	>>> uct 1 netsim
-    	netsim
-    	0.0000
+    		netsim
+    		0.0000
 
 	>>> uct 5 netsim
-    	netsim
-  	192.0000
+    		netsim
+  		192.0000
 	
 	>>> expconf (Set configuration. add new measurement Group: simMeasureGroup, add channel: netsim, add storage file name: test.h5, file path: /tmp)
 	
