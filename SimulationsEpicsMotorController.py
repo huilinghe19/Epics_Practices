@@ -1,9 +1,13 @@
 import time
 import epics
 from epics import Motor
+
 from sardana import State, SardanaValue
 from sardana.pool.controller import MotorController, Type, Description,\
     DefaultValue
+
+from tango import *
+from PyTango import *
 
 #import configparser
 #config = configparser.ConfigParser()
@@ -18,13 +22,21 @@ class EpicsMotorHW(object):
         """
         Connect with the epics PV using the prefix name and axis number of PV.
         """
-        try:
-            motorHW = Motor(str(name) + str(axis))
-            print("EpicsMotor {} Connected ".format(motorHW))
-            return motorHW
-        except epics.motor.MotorException:
-            print("MotorException, check the epics Motor Hardware. ")
-            return
+        while True:
+            try:
+                print("Epics Motor Name: {}".format(str(name) + str(axis)))
+                motorHW = Motor(str(name) + str(axis))
+                deviceType = motorHW.get('device_type', as_string=True)
+                if deviceType == 'asynMotor':
+                    print("Epics Motor {} Connected ".format(motorHW))
+                    return motorHW
+                    break
+               
+            except epics.motor.MotorException:
+                print("MotorException, check the Epics Motor. ")
+                raise
+                #return
+
 
     def getStateID(self, axis):
         """
@@ -320,15 +332,18 @@ class SimulationsEpicsMotorController2(MotorController):
     
     def __init__(self, inst, props, *args, **kwargs):
         MotorController.__init__(self, inst, props, *args, **kwargs)
-        self.PV= "IOCsim:m"
+        print("Epics PV Prefix:::", self.PV)
         self.epicsmotorHW = EpicsMotorHW(self.PV)
+        
         #super_class = super(CopleyController, self)
         #super_class.__init__(inst, props, *args, **kwargs)
-        #self.epicsmotorHW = EpicsMotorHW(self.PV)
+        
+       
         ### Epics PV initialization process 
         epicsmotorHW = self.epicsmotorHW
-        print("Epics PV Prefix:::", self.PV)
-        print("Check Epics PV Server::: {} is connected".format(epicsmotorHW.connectMotor(self.PV, 1)))
+        # if axis 1 exists, then use this method to check the epics PV
+        print("Check Epics Motor: {} OK ".format(epicsmotorHW.connectMotor(self.PV, 1)))
+        
         ### Epics PV initialization process finished
         
     def AddDevice(self, axis):
@@ -336,7 +351,7 @@ class SimulationsEpicsMotorController2(MotorController):
         Add an axis.
         """
         if axis > self.MaxDevice:
-            raise Exception("Max. 10 devices are allowed")
+            raise Exception("Max. 8 devices are allowed")
 
     def DeleteDevice(self, axis):
         """
@@ -435,8 +450,6 @@ class SimulationsEpicsMotorController2(MotorController):
             ans = motorHW.getBaseRate(axis)        
         elif name == "step_per_unit":
             ans = motorHW.getStepPerUnit(axis)
-        #elif name == "dial_low_limit":
-            #ans = motorHW.getDial_low_limit(axis)
         return ans
 
     def SetAxisPar(self, axis, name, value):
@@ -457,7 +470,4 @@ class SimulationsEpicsMotorController2(MotorController):
             motorHW.setBaseRate(axis, value)
         elif name == "step_per_unit":
             motorHW.setStepPerUnit(axis, value)
-        #elif name == "dial_low_limit":
-            #motorHW.setDial_low_limit(axis, value)
-
-
+ 
