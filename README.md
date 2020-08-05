@@ -1,11 +1,20 @@
 # Epics_Practices
 epics and pyepics practices, in oder to use epics module in Sardana .
 
+# Add motors, controllers in Sardana
+Method 1: Spock Operation(standard sardana operation)
+
+Method 2: Jive Operation(for all tango devices)
+
+Method 3: Use Python Script with Tango/PyTango. "addDeviceinSardana.py" can be used to add devices in sardana when the server is ON. This code can also be added in the controller program, then the server must restart. 
+
 
 # Define Epics PV in spock 
-## controller is simctrl
-## motor is sim1
-### dial/user limit are different in epics and sardana. They are seperate concepts. Users can define both of them in epics and sardana, the ranges must be valid, but the ranges can be different. The dial limit values in sardana do not come from epics module. They are set by the sardana users. The range of the epics PV >= the range of sardana motor.     
+
+controller is simctrl, motor is sim1
+
+dial/user limit are different in epics and sardana. They are seperate concepts. Users can define both of them in epics and sardana, the ranges must be valid, but the ranges can be different. The dial limit values in sardana do not come from epics module. They are set by the sardana users. The range of the epics PV >= the range of sardana motor.     
+	
 	>>> Pool_simulation_1.put_property({"PoolPath":["/controllers/simulationEpics"]}) 
 	>>> defctrl SimulationsEpicsMotorController2 simctrl PV="IOCsim:m"
 	>>> defelem sim1 simctrl 1
@@ -33,13 +42,40 @@ epics and pyepics practices, in oder to use epics module in Sardana .
 	 Current           10.0
 	 Low               -4.0
 
+Before using sardana tools macroexecutor and sequencer, something must be already set such as storage and measurementGoup and so on. Otherweise the execution can not run well. Add ct, Add channel, measurementGoup, add senv file. 
+	
+	>>> defctrl NetworkTrafficCounterTimerController netctrlsim interface eno1
+	>>> defelem netsim netctrlsim 1 
+	>>> uct 1 netsim
+    		netsim
+    		0.0000
+
+	>>> uct 5 netsim
+    		netsim
+  		192.0000
+	
+	>>> expconf (Set configuration. add new measurement Group: simMeasureGroup, add channel: netsim, add storage file name: test.h5, file path: /tmp)
+	
+	>>> ascan sim1 -2 2 4 1
+	Operation will be saved in /tmp/test.h5 (HDF5::NXscan from NXscanH5_FileRecorder)
+	Scan #1 started at Wed Aug  5 11:00:37 2020. It will take at least 0:00:13.900000
+ 	#Pt No     sim1     netsim      dt   
+   	0         -2       360     0.21673 
+   	1         -1      15249    1.29967 
+   	2         0        552     2.37312 
+   	3         0        192     3.46593 
+   	4         2        454     4.49761 
+	Operation saved in /tmp/test.h5 (HDF5::NXscan)
+	Scan #1 ended at Wed Aug  5 11:00:43 2020, taking 0:00:05.531525. Dead time 9.6% (motion dead time 2.0%)
 
 # Control properties 
 	ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
-## "PV" is the control property of the controller, which stands for the epics PV name. It is a default value. It can be changed to adapt to the other PVs before the server start. Make sure the control property "PV" is right. A very important issue is, once the sardana server is started(controller program is used) and the controllers and motors are already created in Tango DB/jive, the property is shown in jive and will be not easily changed. Because this is a default value. We can change it directly in jive/Tango DB. We can also delete the server and then restart the sardana server with other control properties in the controller program. That means, if control properties in the program are changed, it may not work because the tango DB has already another default one. 
+
+"PV" is the control property of the controller, which stands for the epics PV name. It is a default value. It can be changed to adapt to the other PVs before the server start. Make sure the control property "PV" is right. A very important issue is, once the sardana server is started(controller program is used) and the controllers and motors are already created in Tango DB/jive, the property is shown in jive and will be not easily changed. Because this is a default value. We can change it directly in jive/Tango DB. We can also delete the server and then restart the sardana server with other control properties in the controller program. That means, if control properties in the program are changed, it may not work because the tango DB has already another default one. 
 
 # Motor Attributes
-## The standard sardana motor attributes like "position", "velocity", "acceleration", "deceleration", "base_rate", "step_per_unit" can be easily got in spock. Other epics motor attributes can not be got by default attribute settings. But we can write extra neu marcos to get/set them. 
+
+The standard sardana motor attributes like "position", "velocity", "acceleration", "deceleration", "base_rate", "step_per_unit" can be easily got in spock. Other epics motor attributes can not be got by default attribute settings. But we can write extra neu marcos to get/set them. 
 
 	>>> simctrl.get_db_host()
 	Result [3]: 'dide17.basisit.de'
