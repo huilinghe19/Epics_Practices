@@ -111,7 +111,7 @@ The standard sardana motor attributes like "position", "velocity", "acceleration
   
 ## The second method is:
   
-  Define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function.
+  Define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function. motor.VELO, motor.RBV can be also used to get the attributes directly.
   
    mv function can be also got by motor.move(val=int(position)). Some Paramerters can be also got and set by motor.get_position(), motor.set_position()...
 
