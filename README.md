@@ -17,6 +17,10 @@ change the address in .bashrc file
 	"""export EPICS_CA_ADDR_LIST=134.30.209.234"""
 
 
+install ca
+
+	>>> sudo mkdir /usr/local/share/ca-certificates/extra
+	>>> sudo apt-get install ca-certificates -y
 # Add motors, controllers in Sardana
 Method 1: Spock Operation(standard sardana operation)
 
