@@ -1,6 +1,28 @@
 # Epics_Practices
 epics and pyepics practices, in oder to use epics module in Sardana .
 
+# Epics Motor
+
+Problem: 
+
+	>>> motor.MSTA 
+	>>> 16802  (100000110100010)
+
+
+PV: dist222dh1600:m1
+
+change the address in .bashrc file
+	
+	>>> nano .bashrc
+	"""export EPICS_CA_ADDR_LIST=134.30.209.234"""
+
+
+install ca
+
+	>>> sudo mkdir /usr/local/share/ca-certificates/extra
+	>>> sudo apt-get install ca-certificates -y
+	>>> sudo update-ca-certificates
+
 # Add motors, controllers in Sardana
 Method 1: Spock Operation(standard sardana operation)
 
@@ -111,7 +133,7 @@ The standard sardana motor attributes like "position", "velocity", "acceleration
   
 ## The second method is:
   
-  Define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function.
+  Define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function. motor.VELO, motor.RBV can be also used to get the attributes directly.
   
    mv function can be also got by motor.move(val=int(position)). Some Paramerters can be also got and set by motor.get_position(), motor.set_position()...
 
