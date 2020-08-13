@@ -7,6 +7,9 @@ Problem:
 
 	>>> motor.MSTA 
 	>>> 16802  (100000110100010)
+	>>> motor.ATHM
+	>>> 1 (at home position, can not move correctly)
+	
 
 
 PV: dist222dh1600:m1
