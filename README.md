@@ -1,8 +1,10 @@
 # Epics_Practices
 epics and pyepics practices, in oder to use epics module in Sardana .
 
-# Epics Motor 
-dist222dh1600:m1
+# Epics Motor
+
+PV: dist222dh1600:m1
+change the address in .bashrc file
 	>>> nano .bashrc
 	"""export EPICS_CA_ADDR_LIST=134.30.209.234"""
 
