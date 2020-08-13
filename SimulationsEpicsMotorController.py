@@ -48,15 +48,15 @@ class EpicsMotorHW(object):
             return 
 			             
         else:
-            motorState = int(motor.get('MSTA'))
+            motorState = int(motor.get('DMOV'))
             HighLimitSwitch = motor.get('HIGH')
             LowLimitSwitch = motor.get('LOW')
-            if motorState == 10 or motorState == 2:
+            if motorState == 10 or motorState == 1:
                 stateID = 1
-            elif motorState == 1024: 
+            elif motorState == 0: 
                 stateID = 2
-            elif motorState == 1025:
-                stateID = 2
+            #elif motorState == 1025:
+                #stateID = 2
             elif HighLimitSwitch == 1:
                 stateID = 3
             elif LowLimitSwitch == 1:
@@ -75,8 +75,8 @@ class EpicsMotorHW(object):
  
         else:            
              motorState = int(motor.get('MSTA'))
-             HighLimitSwitch = motor.get('HIGH')
-             LowLimitSwitch = motor.get('LOW')
+             HighLimitSwitch = motor.get('HLS')
+             LowLimitSwitch = motor.get('LLS')
 
              if motorState == 10 or motorState == 2:
                  status = "Motor HW is ON"
@@ -96,8 +96,8 @@ class EpicsMotorHW(object):
         Set the limit switches of the axis.
         """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
-        HighLimitSwitch = motor.put('HIGH', 1)
-        LowLimitSwitch = motor.put('LOW', 1)
+        HighLimitSwitch = motor.put('HLS', 1)
+        LowLimitSwitch = motor.put('LLS', 1)
         switchstate = 3 * [False, ]
         if HighLimitSwitch == 1:
             switchstate[1] = True
@@ -126,7 +126,8 @@ class EpicsMotorHW(object):
         Get the position of the axis.
         """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
-        return float(motor.get_position())
+        return float(motor.get('RBV'))
+        #return float(motor.get_position())
     
     def getAcceleration(self, axis):
         """
@@ -326,7 +327,7 @@ class EpicsMotorHW(object):
 class SimulationsEpicsMotorController2(MotorController):
     MaxDevice = 8
     
-    ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
+    ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"dist222dh1600:m"}}
     
     STATES = {1: State.On, 2: State.Moving, 3: State.Alarm, 4: State.Fault, 5: State.Unknown}
     
