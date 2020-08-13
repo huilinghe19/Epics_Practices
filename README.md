@@ -1,6 +1,9 @@
 # Epics_Practices
 epics and pyepics practices, in oder to use epics module in Sardana .
 
+# Epics Motor 
+dist222dh1600:m1
+
 # Add motors, controllers in Sardana
 Method 1: Spock Operation(standard sardana operation)
 
