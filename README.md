@@ -11,13 +11,13 @@ Problem:
 
 PV: dist222dh1600:m1
 
-change the address in .bashrc file
+change the address in .bashrc file, in oder to access the EPICS Motor
 	
 	>>> nano .bashrc
 	"""export EPICS_CA_ADDR_LIST=134.30.209.234"""
 
 
-install ca
+install ca, ca tools do not work auf dide17
 
 	>>> sudo mkdir /usr/local/share/ca-certificates/extra
 	>>> sudo apt-get install ca-certificates -y
