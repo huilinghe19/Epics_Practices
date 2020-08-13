@@ -21,6 +21,8 @@ install ca
 
 	>>> sudo mkdir /usr/local/share/ca-certificates/extra
 	>>> sudo apt-get install ca-certificates -y
+	>>> sudo update-ca-certificates
+
 # Add motors, controllers in Sardana
 Method 1: Spock Operation(standard sardana operation)
 
