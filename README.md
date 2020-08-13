@@ -3,8 +3,16 @@ epics and pyepics practices, in oder to use epics module in Sardana .
 
 # Epics Motor
 
+Problem: 
+
+	>>> motor.MSTA 
+	>>> 16802  (100000110100010)
+
+
 PV: dist222dh1600:m1
+
 change the address in .bashrc file
+	
 	>>> nano .bashrc
 	"""export EPICS_CA_ADDR_LIST=134.30.209.234"""
 
