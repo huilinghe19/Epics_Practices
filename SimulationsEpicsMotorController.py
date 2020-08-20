@@ -49,8 +49,8 @@ class EpicsMotorHW(object):
 			             
         else:
             motorState = int(motor.get('DMOV'))
-            HighLimitSwitch = motor.get('HIGH')
-            LowLimitSwitch = motor.get('LOW')
+            HighLimitSwitch = motor.get('HLS')
+            LowLimitSwitch = motor.get('LLS')
             if motorState == 10 or motorState == 1:
                 stateID = 1
             elif motorState == 0: 
@@ -74,14 +74,17 @@ class EpicsMotorHW(object):
              status = "Motor HW is Fault"
  
         else:            
-             motorState = int(motor.get('MSTA'))
+             motorState = int(motor.get('DMOV'))
              HighLimitSwitch = motor.get('HLS')
              LowLimitSwitch = motor.get('LLS')
 
-             if motorState == 10 or motorState == 2:
+             if motorState == 10 or motorState == 1:
                  status = "Motor HW is ON"
-             elif motorState == 1024 or motorState == 1025:
+
+             elif motorState == 0:
                  status = "Motor HW is MOVING"
+             #elif motorState == 1024 or motorState == 1025:
+                 #status = "Motor HW is MOVING"
              elif HighLimitSwitch == 1:
                  status = "Motor HW is in ALARM. Hit hardware upper limit switch"
              elif LowLimitSwitch == 1:
@@ -98,6 +101,7 @@ class EpicsMotorHW(object):
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
         HighLimitSwitch = motor.put('HLS', 1)
         LowLimitSwitch = motor.put('LLS', 1)
+        
         switchstate = 3 * [False, ]
         if HighLimitSwitch == 1:
             switchstate[1] = True
@@ -111,9 +115,12 @@ class EpicsMotorHW(object):
         Get the limit switches of the axis.
         """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
-        HighLimitSwitch = int(motor.get('HIGH'))
-        LowLimitSwitch = int(motor.get('LOW'))
+        HighLimitSwitch = int(motor.get('HLS'))
+        LowLimitSwitch = int(motor.get('LLS'))
+        HomeSwitch = int(motor.get('ATHM'))
         switchstate = 3 * [False, ]
+        if HomeSwitch == 1:
+            switchstate[0] == True
         if HighLimitSwitch == 1:
             switchstate[1] = True
         if LowLimitSwitch == 1:
