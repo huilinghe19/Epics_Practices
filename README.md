@@ -34,7 +34,7 @@ Method 2: Jive Operation(for all tango devices)
 Method 3: Use Python Script with Tango/PyTango. "addDeviceinSardana.py" can be used to add devices in sardana when the server is ON. This code can also be added in the controller program, then the server must restart. 
 
 
-# Define Epics PV in spock 
+# Operations in spock 
 
 controller is simctrl, motor is sim1
 
@@ -86,12 +86,34 @@ Before using sardana tools macroexecutor and sequencer, something must be alread
 	Scan #1 started at Wed Aug  5 11:00:37 2020. It will take at least 0:00:13.900000
  	#Pt No     sim1     netsim      dt   
    	0         -2       360     0.21673 
-   	1         -1      15249    1.29967 
+   	1         -1      15249    1.29967 https://epics.anl.gov/bcda/synApps/motor/motorRecord.html#Fields_status
    	2         0        552     2.37312 
    	3         0        192     3.46593 
    	4         2        454     4.49761 
 	Operation saved in /tmp/test.h5 (HDF5::NXscan)
 	Scan #1 ended at Wed Aug  5 11:00:43 2020, taking 0:00:05.531525. Dead time 9.6% (motion dead time 2.0%)
+	
+Epics Motor Attributes:
+
+The standard sardana motor attributes like "position", "velocity", "acceleration", "deceleration", "base_rate", "step_per_unit" can be easily got in spock. Other epics motor attributes can not be got by default attribute settings. But we can write extra neu marcos to get/set them. 
+
+	>>> simctrl.get_db_host()
+	Result [3]: 'dide17.basisit.de'
+	>>> simctrl.get_db_port()
+	Result [4]: '10000'
+	>>> simctrl.get_property("PV")
+	Result [7]: {'PV': ['IOCsim:m']}
+	>>> sim1.position
+	Result [51]: 1.0
+	>>> sim1.base_rate
+	Result [50]: 0.1
+	>>>  sim1.velocity
+	Result [53]: 1.0
+	>>> sim1.limit_switches
+	Result [52]: array([False, False, False])
+
+
+
 
 # Control properties 
 	ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
@@ -113,24 +135,6 @@ Copley Motor:
 
 	EPICS_CA_ADDR_LIST= 134.30.209.234
 
-# Motor Attributes
-
-The standard sardana motor attributes like "position", "velocity", "acceleration", "deceleration", "base_rate", "step_per_unit" can be easily got in spock. Other epics motor attributes can not be got by default attribute settings. But we can write extra neu marcos to get/set them. 
-
-	>>> simctrl.get_db_host()
-	Result [3]: 'dide17.basisit.de'
-	>>> simctrl.get_db_port()
-	Result [4]: '10000'
-	>>> simctrl.get_property("PV")
-	Result [7]: {'PV': ['IOCsim:m']}
-	>>> sim1.position
-	Result [51]: 1.0
-	>>> sim1.base_rate
-	Result [50]: 0.1
-	>>>  sim1.velocity
-	Result [53]: 1.0
-	>>> sim1.limit_switches
-	Result [52]: array([False, False, False])
 
 
   
@@ -147,9 +151,9 @@ The standard sardana motor attributes like "position", "velocity", "acceleration
 
 # Move Implementation.
 
-## The first method is: using ca tools like caget(), caput()
+The first method is: using ca tools like caget(), caput()
   
-## The second method is:
+The second method is:
   
   Define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function. motor.VELO, motor.RBV can be also used to get the attributes directly.
   
