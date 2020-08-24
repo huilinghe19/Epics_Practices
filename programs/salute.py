@@ -1,10 +1,7 @@
 from sardana.macroserver.macro import Macro, macro, Type, ParamRepeat, ViewOption, iMacro
-
-import datetime
-from taurus.console.table import Table
-import PyTango
-from PyTango import DevState
-from sardana.macroserver.msexception import StopException
+#import datetime
+#from taurus.console.table import Table
+#from sardana.macroserver.msexception import StopException
 from epics import Motor
 
 
@@ -59,48 +56,7 @@ def check_motor_state(self, motorName):
  
 
 
-@macro()
-def hello_world(self):
-    self.output('Running hello_world...')
 
-
-class HelloWorld(Macro):
-    """Hello, World! macro"""
-
-    def run(self):
-        self.output("Hello, World!")
-
-
-@macro()
-def hello_world2(self):
-    """This is an hello world macro"""
-    print("Hello, World!")
-
-
-from sardana import State
-
-@macro([["motor", Type.Motor, None, "Motor to oscilate"],
-        ["amplitude", Type.Float, None, "Oscilation amplitude"],
-        ["integ_time", Type.Float, None, "Integration time"]])
-def oscillate(self, motor, amplitude, integ_time):
-    """Acquire with the active measurement group while oscillating a motor.
-    """
-    motion = self.getMotion([motor])
-    curr_pos = motor.getPosition()
-    positions = [curr_pos + amplitude / 2,
-                 curr_pos - amplitude / 2]
-
-    mnt_grp_name = self.getEnv("ActiveMntGrp")
-    mnt_grp = self.getMeasurementGroup(mnt_grp_name)
-    mnt_grp.putIntegrationTime(integ_time)
-
-    i = 0
-    id_ = mnt_grp.startCount()
-    while mnt_grp.State() == State.Moving:
-        motion.move(positions[i])
-        i += 1
-        i %= 2
-    mnt_grp.waitCount(id_)
 
 
  
