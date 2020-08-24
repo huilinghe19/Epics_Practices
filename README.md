@@ -159,15 +159,6 @@ The second method is:
   
    mv function can be also got by motor.move(val=int(position)). Some Paramerters can be also got and set by motor.get_position(), motor.set_position()...
 
-# Permissions Problem 
-Once the file comes from another computer with the scp method, then there will be a problem to change it or use it under oil@dide17. Because the permissions for the file need to be reconsidered. Sardana needs the original huiling permissions.
-
-On the same computer dide17, if the user is not original huiling, then Sardana can not be used. The error message is:  
-
-"pkg_resources.DistributionNotFound: The 'PyTango>=9.2.5' distribution was not found and is required by sardana"
-
-The problem occurs with tango installation. Wenn I install tango at the first time, it is necessary to put "tango", "tango" as user and password for MySQL. Just user "huiling" has the right to import tango. "import tango" does not work when the user is different. Although jive can be opened, but the usage of tango can not be sure.
-
 # NOTE:
 1, In oder to test the difference between epics process variable and epics motors, 2 different motor controllers should be created. These two controllers can not be put in the same pool, otherweise sardana will be confused and does not work well.  That means, another sardana pool must be created to test them.
 
