@@ -86,7 +86,7 @@ Before using sardana tools macroexecutor and sequencer, something must be alread
 	Scan #1 started at Wed Aug  5 11:00:37 2020. It will take at least 0:00:13.900000
  	#Pt No     sim1     netsim      dt   
    	0         -2       360     0.21673 
-   	1         -1      15249    1.29967 https://epics.anl.gov/bcda/synApps/motor/motorRecord.html#Fields_status
+   	1         -1      15249    1.29967 
    	2         0        552     2.37312 
    	3         0        192     3.46593 
    	4         2        454     4.49761 
