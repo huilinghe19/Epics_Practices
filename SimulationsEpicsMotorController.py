@@ -36,8 +36,19 @@ class EpicsMotorHW(object):
                 print("MotorException, check the Epics Motor. ")
                 raise
                 #return
-
-
+                
+    def checkEpicsMotorNr(self, name):
+        i = 1
+   
+        while True:
+            try:
+                m = Motor(name + str(i))
+                print('Epics Motor {} '.format(name + str(i)))
+                i +=1
+            except:
+                break
+            
+                
     def getStateID(self, axis):
         """
         Get the value from axis MSTA attribute and map them into stateID: 1,2,3 
@@ -340,7 +351,7 @@ class SimulationsEpicsMotorController2(MotorController):
     
     def __init__(self, inst, props, *args, **kwargs):
         MotorController.__init__(self, inst, props, *args, **kwargs)
-        print("Epics PV Prefix:::", self.PV)
+        print("Epics PV Prefix: ", self.PV)
         self.epicsmotorHW = EpicsMotorHW(self.PV)
         
         #super_class = super(CopleyController, self)
@@ -350,8 +361,8 @@ class SimulationsEpicsMotorController2(MotorController):
         ### Epics PV initialization process 
         epicsmotorHW = self.epicsmotorHW
         # if axis 1 exists, then use this method to check the epics PV
-        print("Check Epics Motor: {} OK ".format(epicsmotorHW.connectMotor(self.PV, 1)))
-        
+        #print("Check Epics Motor: {} OK ".format(epicsmotorHW.connectMotor(self.PV, 1)))
+        epicsmotorHW.checkEpicsMotorNr(self.PV)
         ### Epics PV initialization process finished
         
     def AddDevice(self, axis):
