@@ -166,3 +166,7 @@ The problem occurs with tango installation. Wenn I install tango at the first ti
 
 # NOTE:
 1, In oder to test the difference between epics process variable and epics motors, 2 different motor controllers should be created. These two controllers can not be put in the same pool, otherweise sardana will be confused and does not work well.  That means, another sardana pool must be created to test them.
+
+2, Epics Module 
+
+https://epics.anl.gov/bcda/synApps/motor/motorRecord.html#Fields_status 
