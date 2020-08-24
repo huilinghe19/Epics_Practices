@@ -98,6 +98,21 @@ Before using sardana tools macroexecutor and sequencer, something must be alread
 
 "PV" is the control property of the controller, which stands for the epics PV name. It is a default value. It can be changed to adapt to the other PVs before the server start. Make sure the control property "PV" is right. A very important issue is, once the sardana server is started(controller program is used) and the controllers and motors are already created in Tango DB/jive, the property is shown in jive and will be not easily changed. Because this is a default value. We can change it directly in jive/Tango DB. We can also delete the server and then restart the sardana server with other control properties in the controller program. That means, if control properties in the program are changed, it may not work because the tango DB has already another default one. 
 
+
+For simulation epics motor "IOCsim:m1", "IOCsim:m2"..., the DefaultValue is "IOCsim:m".
+
+For epics copley motor "dist222dh1600:m1" "dist222dh1600:m2", DefaultValue is "dist222dh1600:m". We can change it directly in Controller Properties in jive.
+
+Note: these 2 CA addresses are different. 
+
+Simulationsmotor:  
+		
+	EPICS_CA_ADDR_LIST=192.168.1.255
+	
+Copley Motor: 
+
+	EPICS_CA_ADDR_LIST= 134.30.209.234
+
 # Motor Attributes
 
 The standard sardana motor attributes like "position", "velocity", "acceleration", "deceleration", "base_rate", "step_per_unit" can be easily got in spock. Other epics motor attributes can not be got by default attribute settings. But we can write extra neu marcos to get/set them. 
@@ -150,4 +165,4 @@ On the same computer dide17, if the user is not original huiling, then Sardana c
 The problem occurs with tango installation. Wenn I install tango at the first time, it is necessary to put "tango", "tango" as user and password for MySQL. Just user "huiling" has the right to import tango. "import tango" does not work when the user is different. Although jive can be opened, but the usage of tango can not be sure.
 
 # NOTE:
-1, In oder to test the difference between epics process variable and epics motors, 2 different motor controllers should be created. then these two controllers can not be put in the same pool. otherweise sardana will be confused and does not work well.  That means, another sardana pool must be created to test them.SimulationsEpicsMotorController.py
+1, In oder to test the difference between epics process variable and epics motors, 2 different motor controllers should be created. These two controllers can not be put in the same pool, otherweise sardana will be confused and does not work well.  That means, another sardana pool must be created to test them.
