@@ -36,7 +36,7 @@ Method 3: Use Python Script with Tango/PyTango. "addDeviceinSardana.py" can be u
 
 # Operations in spock 
 
-controller is simctrl, motor is sim1
+controller is simctrl, motors are called m1, m2 for copley motors. Old motors are called sim1, sim2. Following practices are combined with simulation motors.
 
 dial/user limit are different in epics and sardana. They are seperate concepts. Users can define both of them in epics and sardana, the ranges must be valid, but the ranges can be different. The dial limit values in sardana do not come from epics module. They are set by the sardana users. The range of the epics PV >= the range of sardana motor.     
 	
