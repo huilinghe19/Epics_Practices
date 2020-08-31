@@ -41,6 +41,7 @@ controller is simctrl, motors are called m1, m2 for copley motors. Old motors ar
 dial/user limit are different in epics and sardana. They are seperate concepts. Users can define both of them in epics and sardana, the ranges must be valid, but the ranges can be different. The dial limit values in sardana do not come from epics module. They are set by the sardana users. The range of the epics PV >= the range of sardana motor.     
 	
 	>>> Pool_simulation_1.put_property({"PoolPath":["/controllers/simulationEpics"]}) 
+	>>> _MACRO_SERVER.put_property({"MacroPath":["/macros/"]})
 	>>> defctrl SimulationsEpicsMotorController2 simctrl PV="IOCsim:m"
 	>>> defelem sim1 simctrl 1
 	>>>  wa
