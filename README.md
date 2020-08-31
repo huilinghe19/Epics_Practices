@@ -8,7 +8,7 @@ Problem:
 	>>> motor.MSTA 
 	>>> 16802  (100000110100010)
 	>>> motor.ATHM
-	>>> 1 (at home position, can not move correctly)
+	>>> 1 
 	
 
 
@@ -34,9 +34,9 @@ Method 2: Jive Operation(for all tango devices)
 Method 3: Use Python Script with Tango/PyTango. "addDeviceinSardana.py" can be used to add devices in sardana when the server is ON. This code can also be added in the controller program, then the server must restart. 
 
 
-# Define Epics PV in spock 
+# Operations in spock 
 
-controller is simctrl, motor is sim1
+controller is simctrl, motors are called m1, m2 for copley motors. Old motors are called sim1, sim2. Following practices are combined with simulation motors.
 
 dial/user limit are different in epics and sardana. They are seperate concepts. Users can define both of them in epics and sardana, the ranges must be valid, but the ranges can be different. The dial limit values in sardana do not come from epics module. They are set by the sardana users. The range of the epics PV >= the range of sardana motor.     
 	
@@ -92,13 +92,8 @@ Before using sardana tools macroexecutor and sequencer, something must be alread
    	4         2        454     4.49761 
 	Operation saved in /tmp/test.h5 (HDF5::NXscan)
 	Scan #1 ended at Wed Aug  5 11:00:43 2020, taking 0:00:05.531525. Dead time 9.6% (motion dead time 2.0%)
-
-# Control properties 
-	ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
-
-"PV" is the control property of the controller, which stands for the epics PV name. It is a default value. It can be changed to adapt to the other PVs before the server start. Make sure the control property "PV" is right. A very important issue is, once the sardana server is started(controller program is used) and the controllers and motors are already created in Tango DB/jive, the property is shown in jive and will be not easily changed. Because this is a default value. We can change it directly in jive/Tango DB. We can also delete the server and then restart the sardana server with other control properties in the controller program. That means, if control properties in the program are changed, it may not work because the tango DB has already another default one. 
-
-# Motor Attributes
+	
+Epics Motor Attributes:
 
 The standard sardana motor attributes like "position", "velocity", "acceleration", "deceleration", "base_rate", "step_per_unit" can be easily got in spock. Other epics motor attributes can not be got by default attribute settings. But we can write extra neu marcos to get/set them. 
 
@@ -118,6 +113,30 @@ The standard sardana motor attributes like "position", "velocity", "acceleration
 	Result [52]: array([False, False, False])
 
 
+
+
+# Control properties 
+	ctrl_properties = {"PV": {Type:str, Description:"Epics Process Variable", DefaultValue:"IOCsim:m"}}
+
+"PV" is the control property of the controller, which stands for the epics PV name. It is a default value for the controller. It can be changed to adapt to the other PVs before the server start. Make sure the control property "PV" is right. A very important issue is, once the sardana server is started(controller program is used) and the controllers and motors are already created in Tango DB/jive, the property is shown in jive. We can not change it with the controller program. We can either change it directly in jive/Tango DB or delete the old server and then restart the sardana server with a new PV DefaultValue in the controller program. That means, the control properties in the program may not work because the tango DB has already another default one. 
+
+
+For simulation epics motor "IOCsim:m1", "IOCsim:m2"..., the DefaultValue is "IOCsim:m".
+
+For epics copley motor "dist222dh1600:m1" "dist222dh1600:m2", DefaultValue is "dist222dh1600:m". We can change it directly in Controller Properties in jive.
+
+Note: these 2 CA addresses are different. 
+
+Simulationsmotor:  
+		
+	EPICS_CA_ADDR_LIST=192.168.1.255
+	
+Copley Motor: 
+
+	EPICS_CA_ADDR_LIST= 134.30.209.234
+
+
+
   
 # The way to start the epics ca server:
 	cd /hzb/EPICS01/motor-6.11-old/iocBoot/iocSim
@@ -132,22 +151,17 @@ The standard sardana motor attributes like "position", "velocity", "acceleration
 
 # Move Implementation.
 
-## The first method is: using ca tools like caget(), caput()
+The first method is: using ca tools like caget(), caput()
   
-## The second method is:
+The second method is:
   
   Define a motor from Class Motor, the mv function can be got by motor.put("VAL", int(position)) + motor("SPMG", "Go"), the other parameters can be got by motor.get() function. motor.VELO, motor.RBV can be also used to get the attributes directly.
   
    mv function can be also got by motor.move(val=int(position)). Some Paramerters can be also got and set by motor.get_position(), motor.set_position()...
 
-# Permissions Problem 
-Once the file comes from another computer with the scp method, then there will be a problem to change it or use it under oil@dide17. Because the permissions for the file need to be reconsidered. Sardana needs the original huiling permissions.
-
-On the same computer dide17, if the user is not original huiling, then Sardana can not be used. The error message is:  
-
-"pkg_resources.DistributionNotFound: The 'PyTango>=9.2.5' distribution was not found and is required by sardana"
-
-The problem occurs with tango installation. Wenn I install tango at the first time, it is necessary to put "tango", "tango" as user and password for MySQL. Just user "huiling" has the right to import tango. "import tango" does not work when the user is different. Although jive can be opened, but the usage of tango can not be sure.
-
 # NOTE:
-1, In oder to test the difference between epics process variable and epics motors, 2 different motor controllers should be created. then these two controllers can not be put in the same pool. otherweise sardana will be confused and does not work well.  That means, another sardana pool must be created to test them.SimulationsEpicsMotorController.py
+1, In oder to test the difference between epics process variable and epics motors, 2 different motor controllers should be created. These two controllers can not be put in the same pool, otherweise sardana will be confused and does not work well.  That means, another sardana pool must be created to test them.
+
+2, Epics Module 
+
+https://epics.anl.gov/bcda/synApps/motor/motorRecord.html#Fields_status 
