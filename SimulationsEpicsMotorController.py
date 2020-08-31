@@ -216,8 +216,9 @@ class EpicsMotorHW(object):
         Move the axis to the position.
         """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
-        motor.move(val=int(position))  
-        
+        motor.put('SPMG', 'Go')
+        motor.move(val=int(position))
+	  
     def stop(self, axis):
         """
         Stop the axis.
@@ -351,7 +352,7 @@ class SimulationsEpicsMotorController2(MotorController):
     
     def __init__(self, inst, props, *args, **kwargs):
         MotorController.__init__(self, inst, props, *args, **kwargs)
-        print("Epics PV Prefix: ", self.PV)
+        print("Epics Motor Prefix: ", self.PV)
         self.epicsmotorHW = EpicsMotorHW(self.PV)
         
         #super_class = super(CopleyController, self)
@@ -438,7 +439,8 @@ class SimulationsEpicsMotorController2(MotorController):
         Move the axis(motor) to the given position.
         """
         print("StartOne() start, start the motion of axis {} ".format(axis))
-        motorHW = self.epicsmotorHW        
+        motorHW = self.epicsmotorHW
+        motorHW.setStop_go(axis, "Go")
         motorHW.move(axis, position)
         print("StartOne() finished: the motion of axis {} is started. ")
 
