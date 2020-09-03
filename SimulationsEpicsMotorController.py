@@ -62,17 +62,17 @@ class EpicsMotorHW(object):
             motorState = int(motor.get('DMOV'))
             HighLimitSwitch = motor.get('HLS')
             LowLimitSwitch = motor.get('LLS')
-            if motorState == 10 or motorState == 1:
+            if HighLimitSwitch == 1:
+                stateID = 1
+                print("Epics Motor {} Hit upper switch. ".format(motor))
+            elif LowLimitSwitch ==1:
+                stateID = 1
+                print("Epics Motor {} Hit lower switch. ".format(motor))
+            elif motorState == 1:
                 stateID = 1
             elif motorState == 0: 
                 stateID = 2
-            #elif motorState == 1025:
-                #stateID = 2
-            elif HighLimitSwitch == 1:
-                stateID = 3
-            elif LowLimitSwitch == 1:
-                stateID = 3
-      
+
             return stateID
     
     def getStatus(self, axis):
@@ -90,18 +90,18 @@ class EpicsMotorHW(object):
              LowLimitSwitch = motor.get('LLS')
 
              if motorState == 10 or motorState == 1:
-                 status = "Motor HW is ON"
+                 status = "\n Motor HW is Stopped. "
 
              elif motorState == 0:
-                 status = "Motor HW is MOVING"
+                 status = " \n Motor HW is MOVING. "
              #elif motorState == 1024 or motorState == 1025:
                  #status = "Motor HW is MOVING"
              elif HighLimitSwitch == 1:
-                 status = "Motor HW is in ALARM. Hit hardware upper limit switch"
+                 status = "\n Motor HW is in ALARM. Hit hardware upper limit switch"
              elif LowLimitSwitch == 1:
-                 status = "Motor HW is in ALARM. Hit hardware lower limit switch"
+                 status = "\n Motor HW is in ALARM. Hit hardware lower limit switch"
              elif motorState == 5:
-                 status = "Motor is powered off"
+                 status = "\n Motor is powered off"
 
         return status
     
@@ -216,8 +216,10 @@ class EpicsMotorHW(object):
         Move the axis to the position.
         """
         motor = self.connectMotor(self.EPICS_PVNAME, str(axis))
+        print("Epics Motor {} Start moving ".format(motor))
         motor.put('SPMG', 'Go')
         motor.move(val=int(position))
+        print("Epics Motor {} is Moving. Do not break the motion. ".format(motor))
 	  
     def stop(self, axis):
         """
@@ -387,42 +389,39 @@ class SimulationsEpicsMotorController2(MotorController):
         print("StateOne() start: read axis {} state. ".format(axis))
         
         motorHW = self.epicsmotorHW
-        stateID = motorHW.getStateID(axis)
-        print("State ID: ", stateID)
-        
+        stateID = motorHW.getStateID(axis)        
         ### if just state is needed, then use the following, the status is default in sardana
         state = self.STATES[stateID]
-        #print("Result state : ",  state)
-        #status = motorHW.getStatus(axis)
+        status = motorHW.getStatus(axis)
         ###
-        
+       
         if not stateID:
             print("No State ID from epicsmotorHW")
             return State.Unknown, " Motor is Unknown, please check the epics PV and the connection."
             
         ### if state and status are needed, then use the following
-        #elif stateID == 1:
-            #return State.On, " \n Motor is stopped after moving"
+        #if status == "":
+            #status = " \n Motor is stopped after moving"
         #elif stateID == 2:
-            #return State.Moving, " \n Motor is moving, do not break the motion"
+            #status = " \n Motor is moving, do not break the motion"
         #elif stateID == 3:
-            #return State.Alarm, " Motor is in Alarm"
+            #status =  " Motor is in Alarm"
         #elif stateID == 4:
-            #return State.Alarm, " Motor has an error"
-        #elif stateID == 5:
-            #return State.Unknown, " Motor is Unknown, please check the epics PV and the connection."
-
+            #status = " Motor has an error"
+       
         limit_switches = MotorController.NoLimitSwitch
         hw_limit_switches = motorHW.getLimitsw(axis)
         if hw_limit_switches[0]:
             limit_switches |= MotorController.HomeLimitSwitch
-        if hw_limit_switches[1]:
+        elif hw_limit_switches[1]:
             limit_switches |= MotorController.UpperLimitSwitch
-        if hw_limit_switches[2]:
+           
+        elif hw_limit_switches[2]:
             limit_switches |= MotorController.LowerLimitSwitch
+           
 
         print("StateOne() finished. ")
-        return state,  limit_switches
+        return state, status, limit_switches
   
     def ReadOne(self, axis):
         """
